@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Union
 
 import cv2
 
@@ -29,7 +30,7 @@ class OpenCvPipeline:
         self.logger = logging.getLogger("OpenCV pipeline")
         self.logger.setLevel(logging.DEBUG)
 
-    def init(self, input_file: str, output_file: str):
+    def init(self, input_file: Union[str, int], output_file: str):
         self.cap = cv2.VideoCapture(input_file)
 
         # Read all important information about the video which are relevant for the processing keras_tf

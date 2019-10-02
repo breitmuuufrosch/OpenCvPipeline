@@ -66,6 +66,8 @@ controller = [SimpleController()]
 
 # Create the pipeline and initialize it with the input.
 cv_pipeline = OpenCvPipeline(steps, controller, composition, True)
+# For a file, specify the "path_to_input_file.mp4"
+# For a webcam, specify the number of the webcam (usually 0)
 cv_pipeline.init("path_to_input_file.mp4", "path_to_save_composition.mp4")
 
 # Apply the steps for the specified frames.
@@ -120,6 +122,8 @@ controller = [SimpleController()]
 
 # Create the pipeline and initialize it with the input.
 cv_pipeline = OpenCvPipeline(steps, controller, composition, True)
+# For a file, specify the "path_to_input_file.mp4"
+# For a webcam, specify the number of the webcam (usually 0)
 cv_pipeline.init("path_to_input_file.mp4", "path_to_save_composition.mp4")
 
 # Apply the steps for the specified frames.
@@ -178,6 +182,8 @@ controller = [SimpleController()]
 
 # Create the pipeline and initialize it with the input.
 cv_pipeline = OpenCvPipeline(steps, controller, composition, True)
+# For a file, specify the "path_to_input_file.mp4"
+# For a webcam, specify the number of the webcam (usually 0)
 cv_pipeline.init("path_to_input_file.mp4", "path_to_save_composition.mp4")
 
 # Apply the steps for the specified frames.
