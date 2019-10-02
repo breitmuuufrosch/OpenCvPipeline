@@ -28,6 +28,10 @@ For the facial restoration, two pre-trained models are used.
         
 # Examples/Usage
 
+## Code
+
+### Hog features
+
 ```python
 # Needed imports
 from video.pipeline import Composition2x1, Saver, SimpleController, OpenCvPipeline, Scaling
@@ -69,6 +73,119 @@ cv_pipeline.init("path_to_input_file.mp4", "path_to_save_composition.mp4")
 cv_pipeline.apply(start_frame=0)
 ```
 
+![Results from example](./examples/results/result_hog.png)
+
+### Fidgeting index
+
+```python
+# Needed imports
+from video.pipeline import Composition2x2, Saver, SimpleController, OpenCvPipeline, Scaling
+from video.fidgeting import MovementExtractor
+
+
+# We apply three steps.
+# 1. We scale the video to have half the height and half the width
+# to faster process
+step_scaling = Scaling(0.5)
+
+# 2. We extract the Hog-Features
+step_fidgeting = MovementExtractor(
+    use_gray_scale=True,
+    difference_threshold=30,
+    adaption=0.1,
+    use_mhi=False,
+    mhi_decay=20,
+    gaussian_size=3,
+    csv_path="path_to_file_with_value_per_frame.csv"
+)
+
+# 3. We save the result of the step_hog into the given file.
+step_save = Saver("path_to_extracted.mp4")
+
+
+# To visualize the process, we want to render the result from the
+# scale-step and the visual result from the hog-features.
+composition = Composition2x2(
+    640, 360,
+    step_scaling.get_result,
+    step_fidgeting.get_background,
+    step_fidgeting.get_mhi,
+    step_fidgeting.get_result_printed
+)
+
+# Define the steps as array (order is important!)
+steps = [step_scaling, step_fidgeting, step_save]
+# The simple controller allows to quit the process with "q"
+controller = [SimpleController()]
+
+# Create the pipeline and initialize it with the input.
+cv_pipeline = OpenCvPipeline(steps, controller, composition, True)
+cv_pipeline.init("path_to_input_file.mp4", "path_to_save_composition.mp4")
+
+# Apply the steps for the specified frames.
+# cv_pipeline.apply(start_frame=1000, num_frames=250)
+cv_pipeline.apply(start_frame=0)
+```
+
+![Results from example](./examples/results/result_fidgeting.png)
+
+### Face restoration
+
+(Please see [here](https://breitmuuufrosch.ch/de/portfolio-items/master-thesis-emotion-predictor-machine-learning-based-prediction-of-emotions-using-facial-features/) for more information.)
+
+```python
+# Needed imports
+from video.pipeline import Composition2x2, Saver, SimpleController, OpenCvPipeline, Scaling
+from video.inpainting_tf import FaceInpaintingPConvKeras
+
+
+# We apply three steps.
+# 1. We scale the video to have half the height and half the width
+# to faster process
+step_scaling = Scaling(0.5)
+
+# 2. We extract the Hog-Features
+parameters = {
+    "mirror_center_x": 582, "mirror_center_y": -1761,  "mirror_radius": 2191,
+    "padding": 40, "warp_top": 0, "warp_bottom": 60
+}
+step_face_restoration = FaceInpaintingPConvKeras(
+    model_path="path_to_inpainting_model.h5",
+    dat_face_predictor="path_to_face_predictor.dat",
+    fix_parameters=parameters,
+    always_inpaint=False,
+    use_naive_inpaint_for_two_step=False
+)
+
+# 3. We save the result of the step_hog into the given file.
+step_save = Saver("path_to_extracted.mp4")
+
+
+# To visualize the process, we want to render the result from the
+# scale-step and the visual result from the hog-features.
+composition = Composition2x2(
+    640, 360,
+    step_face_restoration.get_input,
+    step_face_restoration.get_result_printed,
+    step_face_restoration.get_aligned,
+    step_face_restoration.get_result
+)
+
+# Define the steps as array (order is important!)
+steps = [step_scaling, step_face_restoration, step_save]
+# The simple controller allows to quit the process with "q"
+controller = [SimpleController()]
+
+# Create the pipeline and initialize it with the input.
+cv_pipeline = OpenCvPipeline(steps, controller, composition, True)
+cv_pipeline.init("path_to_input_file.mp4", "path_to_save_composition.mp4")
+
+# Apply the steps for the specified frames.
+# cv_pipeline.apply(start_frame=1000, num_frames=250)
+cv_pipeline.apply(start_frame=0)
+```
+
+![Results from example](./examples/results/result_inpainting.png)
 ## Implemented steps
 
 ### General steps
@@ -108,18 +225,20 @@ import video.mirror
 ```
 
 These steps are thesis-specific, where we had to restore the face on the front-camera-stream. To capture the complete face, a mirror was attached, which resulted in two different regions in the complete video source. As a result, some parts of the face were occluded/invisible.
+(Please see [here](https://breitmuuufrosch.ch/de/portfolio-items/master-thesis-emotion-predictor-machine-learning-based-prediction-of-emotions-using-facial-features/) for more information.)
 
 * **SwitchMirrorNormal**: Arrange the two regions to have a normal view on the face.
 * **MirrorInPainter**: Inpaint the occluded parts from the different regions with the basic inpainter form OpenCV.
 
 
-### Mirror steps
+### Inpainting/restoration steps
 
 ```python
 import video.inpainting_tf
 ```
 
 These steps are thesis-specific, where we had to restore the face on the front-camera-stream. To capture the complete face, a mirror was attached, which resulted in two different regions in the complete video source. As a result, some parts of the face were occluded/invisible.
+(Please see [here](https://breitmuuufrosch.ch/de/portfolio-items/master-thesis-emotion-predictor-machine-learning-based-prediction-of-emotions-using-facial-features/) for more information.)
 
 * **FaceInpaintingPConvKeras**: Consists of two steps internally:
     * First, detect the face. If no face is found, try to inpaint naively with the last known position and try to detect the face again. (Significantly higher chance to succeed)

@@ -23,7 +23,7 @@ restored_path = "../data/restored_keras/{0}{1}"
 inpainted_path = "../data/restored_opencv/{0}{1}"
 
 face_predictor = "../models/opencv/shape_predictor_68_face_landmarks.dat"
-restoration_model = "../models/pconv_keras/celeba_hq/70_celeba_hq.h5"
+restoration_model = "../models/pconv_keras/70_celeba_hq.h5"
 
 
 def restore_single(video_id: str, use_simple_inpainter: bool = False):

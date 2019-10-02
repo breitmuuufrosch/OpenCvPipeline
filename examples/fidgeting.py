@@ -43,7 +43,12 @@ def restore_single(video_id: str):
     steps.append(step_scaling)
 
     step_fidgeting = MovementExtractor(
-        use_gray_scale=True, difference_threshold=30, adaption=0.1, use_mhi=False, mhi_decay=20, gaussian_size=3,
+        use_gray_scale=True,
+        difference_threshold=30,
+        adaption=0.1,
+        use_mhi=False,
+        mhi_decay=20,
+        gaussian_size=3,
         csv_path=fidgeting_path
     )
     steps.append(step_fidgeting)
