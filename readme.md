@@ -249,3 +249,8 @@ These steps are thesis-specific, where we had to restore the face on the front-c
 * **FaceInpaintingPConvKeras**: Consists of two steps internally:
     * First, detect the face. If no face is found, try to inpaint naively with the last known position and try to detect the face again. (Significantly higher chance to succeed)
     * Inpaint the face based on the detected landmarks.
+
+# Future work (not defined)
+
+* Create a GUI to see the active steps and the values used for the algorithms. (This was no used for my thesis. I only needed a fast way to apply the same pipeline to a vast of videos with only a few different parameters.)
+* Implementation of more steps or add feature-writing to csv for some steps.
